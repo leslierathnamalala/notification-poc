@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ticket notifications · WhatsApp and Teams</title>
+  <meta name="description" content="Proof of concept: the ticketing system sends WhatsApp and Teams notifications, and reads WhatsApp replies back onto the ticket.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,640&family=Outfit:wght@380;460;560&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+  <script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="nav">
+    <a class="brand" href="#top">Ticket wire</a>
+    <nav aria-label="Page">
+      <a href="#scenario">Scenario</a>
+      <a href="#notifications">Notifications</a>
+      <a href="#choice">Who is told</a>
+      <a href="#conversation">Replies</a>
+      <a href="#steps">Steps</a>
+      <a href="#documents">Documents</a>
+      <a href="#cost">Cost</a>
+      <a href="#conclusion">Conclusion</a>
+    </nav>
+  </header>
+
+  <main id="content">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">Ticketing system · proof of concept</p>
+        <h1>A ticket can reach someone on WhatsApp or in Teams.</h1>
+        <p class="lede">Status changes and SLA clocks become notifications. Each tenant, and each user, decides whether that notification is sent and which medium carries it. A WhatsApp reply can return to the ticket as a comment, or continue the conversation.</p>
+        <p class="possible-line"><span>WhatsApp is possible</span><span>Teams is possible</span></p>
+      </div>
+
+      <div class="stage" aria-hidden="true">
+        <article class="ticket">
+          <div class="ticket-top">
+            <span>INC-1042</span>
+            <span class="pill" id="heroPill">Open</span>
+          </div>
+          <h2>Warehouse printer offline</h2>
+          <p class="ticket-meta">Service desk · priority high</p>
+          <div class="sla">
+            <span class="sla-label">Response SLA</span>
+            <span class="sla-track"><span class="sla-fill" id="heroSla"></span></span>
+          </div>
+        </article>
+
+        <svg class="wires" viewBox="0 0 120 280" preserveAspectRatio="none">
+          <path d="M4 70 C 60 70, 60 70, 116 48" />
+          <path d="M4 150 C 60 150, 60 190, 116 210" />
+        </svg>
+
+        <div class="devices">
+          <div class="phone">
+            <div class="phone-bar"><span></span> WhatsApp</div>
+            <div class="bubble wa" id="heroWa">Ticket INC-1042 is open with the service desk.</div>
+          </div>
+          <div class="teams-win">
+            <div class="teams-bar"><span></span> Teams</div>
+            <div class="bubble tm" id="heroTm">Waiting for the next ticket event.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="scenario">
+      <div class="section-head">
+        <p class="eyebrow">01 · The scenario</p>
+        <h2>The ticketing system keeps the ticket. A notification step carries the news.</h2>
+      </div>
+      <ol class="questions">
+        <li>
+          <span class="q-num">1</span>
+          <h3>Did this action happen?</h3>
+          <p>Someone changed a ticket’s status, or an SLA clock reached a point that should be announced.</p>
+          <svg class="illo" viewBox="0 0 160 90" aria-hidden="true">
+            <rect x="8" y="16" width="144" height="58" rx="8" fill="#fff" stroke="#1c1915" stroke-width="1.5"/>
+            <circle cx="28" cy="16" r="6" fill="#f3efe6" stroke="#1c1915"/>
+            <circle cx="132" cy="16" r="6" fill="#f3efe6" stroke="#1c1915"/>
+            <path d="M22 40h70M22 54h48" stroke="#1c1915" stroke-width="2" stroke-linecap="round"/>
+            <rect class="stamp" x="96" y="36" width="42" height="18" rx="9" fill="#1b7a45"/>
+          </svg>
+        </li>
+        <li>
+          <span class="q-num">2</span>
+          <h3>Should this person hear it?</h3>
+          <p>The tenant can turn the notification on or off. Each user can turn it off for themselves.</p>
+          <svg class="illo" viewBox="0 0 160 90" aria-hidden="true">
+            <rect x="18" y="30" width="124" height="36" rx="18" fill="#fff" stroke="#1c1915" stroke-width="1.5"/>
+            <circle class="knob" cx="112" cy="48" r="14" fill="#1b7a45"/>
+          </svg>
+        </li>
+        <li>
+          <span class="q-num">3</span>
+          <h3>WhatsApp or Teams?</h3>
+          <p>The medium is a setting. The same action can travel on either channel.</p>
+          <svg class="illo split-marks" viewBox="0 0 160 90" aria-hidden="true">
+            <rect x="12" y="22" width="60" height="48" rx="10" fill="#e5f4eb" stroke="#1b7a45"/>
+            <rect x="88" y="22" width="60" height="48" rx="10" fill="#e8edf7" stroke="#3a4f8a"/>
+            <path d="M28 46h28M104 46h28" stroke="#1c1915" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </li>
+      </ol>
+    </section>
+
+    <section id="notifications">
+      <div class="section-head">
+        <p class="eyebrow">02 · Sample notifications</p>
+        <h2>Two actions already show the pattern. Later actions use the same switch.</h2>
+      </div>
+      <div class="samples">
+        <article class="sample reveal">
+          <div class="sample-copy">
+            <p class="tag wa-tag">Status</p>
+            <h3>When someone changes the status of a ticket</h3>
+            <p>The requester or the assignee receives the new status. The wording names the ticket and the status it moved to.</p>
+            <p class="sample-quote">“Ticket INC-1042 moved to In progress.”</p>
+          </div>
+          <div class="status-illo" aria-hidden="true">
+            <div class="mini-ticket">
+              <span>INC-1042</span>
+              <strong class="cycle-pill">In progress</strong>
+              <em></em><em class="short"></em>
+            </div>
+            <div class="fly-note">Status updated</div>
+          </div>
+        </article>
+
+        <article class="sample reveal sla-sample">
+          <div class="clock-illo" aria-hidden="true">
+            <svg viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="62" class="clock-track"/>
+              <circle cx="80" cy="80" r="62" class="clock-value"/>
+              <text x="80" y="76" text-anchor="middle">30</text>
+              <text x="80" y="98" text-anchor="middle" class="clock-unit">min</text>
+            </svg>
+            <div class="fly-note warn">SLA warning</div>
+          </div>
+          <div class="sample-copy">
+            <p class="tag alert-tag">SLA clock</p>
+            <h3>When an SLA clock needs attention</h3>
+            <p>A response target or a resolution target can raise its own notification. The clock belongs to the ticket. The message belongs to the channel configured for that person.</p>
+            <p class="sample-quote">“Ticket INC-1042 is 30 minutes from its response target.”</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="choice">
+      <div class="section-head">
+        <p class="eyebrow">03 · Tenant, user, and medium</p>
+        <h2>Every action can be quiet, or it can travel. The choice is stored per tenant and per user.</h2>
+        <p class="section-lead">Turn a notification on for the tenant. A user can turn that same notification off. While it is on, the medium is WhatsApp or Teams.</p>
+      </div>
+
+      <div class="console">
+        <div class="console-side">
+          <p class="console-label">Action</p>
+          <div class="action-list" role="tablist" aria-label="Notification action">
+            <button type="button" role="tab" id="tab-status" aria-selected="true" aria-controls="preview" data-action="status">Ticket status changed</button>
+            <button type="button" role="tab" id="tab-sla" aria-selected="false" aria-controls="preview" data-action="sla">SLA clock</button>
+          </div>
+
+          <p class="console-label">Send it?</p>
+          <label class="toggle">
+            <input type="checkbox" data-key="tenant" checked>
+            <span class="switch" aria-hidden="true"></span>
+            <span>Tenant default is on</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" data-key="user" checked>
+            <span class="switch" aria-hidden="true"></span>
+            <span>This user receives it</span>
+          </label>
+
+          <p class="console-label">Medium</p>
+          <div class="media" role="group" aria-label="Medium">
+            <button type="button" data-channel="whatsapp" aria-pressed="true">WhatsApp</button>
+            <button type="button" data-channel="teams" aria-pressed="false">Teams</button>
+          </div>
+        </div>
+
+        <div class="preview" id="preview" aria-live="polite">
+          <p class="preview-kicker" id="previewKicker">WhatsApp · ticket status changed</p>
+          <div class="preview-card wa" id="previewCard">
+            <strong id="previewTitle">Message ready</strong>
+            <p id="previewBody">Ticket INC-1042 moved to In progress.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conversation">
+      <div class="section-head">
+        <p class="eyebrow">04 · WhatsApp comes back</p>
+        <h2>The webhook lets the system read a WhatsApp message.</h2>
+        <p class="section-lead">That message can be added as a comment on the ticket, or the service desk can answer and continue the conversation on WhatsApp.</p>
+      </div>
+
+      <div class="thread reveal" id="thread">
+        <div class="col">
+          <p class="col-label">On the person’s WhatsApp</p>
+          <div class="phone tall">
+            <div class="phone-bar"><span></span> WhatsApp</div>
+            <div class="bubble wa in" data-step="1">The printer is still down on floor 2.</div>
+            <div class="bubble wa out" data-step="4">An engineer is on the way.</div>
+          </div>
+        </div>
+        <div class="bridge" aria-hidden="true">
+          <div class="hop">
+            <span>Webhook</span>
+            <svg viewBox="0 0 88 16"><path d="M2 8H74"/><polygon points="74,3 86,8 74,13"/></svg>
+          </div>
+          <div class="hop">
+            <svg viewBox="0 0 88 16"><polygon points="12,3 0,8 12,13"/><path d="M12 8H84"/></svg>
+            <span>Reply</span>
+          </div>
+        </div>
+        <div class="col">
+          <p class="col-label">On the ticket</p>
+          <article class="ticket flat">
+            <div class="ticket-top"><span>INC-1042</span><span class="pill quiet">In progress</span></div>
+            <h3>Warehouse printer offline</h3>
+            <div class="comment in" data-step="2">
+              <strong>Comment from WhatsApp</strong>
+              <p>The printer is still down on floor 2.</p>
+            </div>
+            <div class="comment out" data-step="3">
+              <strong>Service desk reply</strong>
+              <p>An engineer is on the way.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+      <p class="fine">Inside the 24-hour window the reply can be free text. Outside that window WhatsApp accepts an approved template. Teams notifications in this proof of concept are outbound.</p>
+    </section>
+
+    <section class="band" id="path">
+      <div class="section-head">
+        <p class="eyebrow">05 · One notification step</p>
+        <h2>Use cases stop at the ticketing system. The channels sit behind it.</h2>
+      </div>
+      <div class="map reveal" aria-hidden="true">
+        <div class="map-col">
+          <p>Use cases</p>
+          <div class="map-box">Status change</div>
+          <div class="map-box">SLA clock</div>
+        </div>
+        <div class="map-line"></div>
+        <div class="map-col decision">
+          <p>Notification step</p>
+          <div class="map-box ink">Tenant and user<small>Send, or stay quiet</small></div>
+          <div class="map-box ink">Medium<small>WhatsApp or Teams</small></div>
+        </div>
+        <div class="map-lanes">
+          <div class="lane">
+            <p>WhatsApp</p>
+            <div class="lane-row">
+              <div class="map-box">Notification API</div>
+              <div class="map-box">Meta app</div>
+              <div class="map-box">The person</div>
+            </div>
+          </div>
+          <div class="lane">
+            <p>Teams</p>
+            <div class="lane-row">
+              <div class="map-box">Sender account</div>
+              <div class="map-box">Microsoft Graph</div>
+              <div class="map-box">The person’s chat</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="fine map-note">A return path exists on WhatsApp only. Meta posts the inbound message to the webhook, and the ticketing system can file it on the ticket.</p>
+    </section>
+
+    <section id="steps">
+      <div class="section-head">
+        <p class="eyebrow">06 · Integration steps</p>
+        <h2>The steps, briefly.</h2>
+      </div>
+      <div class="step-grid">
+        <article>
+          <h3>WhatsApp</h3>
+          <ol>
+            <li>Create a Meta app and add the WhatsApp product.</li>
+            <li>Configure the phone number ID, the access token, and the webhook verify token.</li>
+            <li>Send the notification from the ticketing system through that API.</li>
+            <li>Publish one webhook for inbound messages and delivery status.</li>
+            <li>Submit business verification, then register the company number.</li>
+            <li>Issue a lasting token and send with approved templates.</li>
+          </ol>
+        </article>
+        <article>
+          <h3>Teams</h3>
+          <ol>
+            <li>Register a single-tenant application in Microsoft Entra ID.</li>
+            <li>Grant admin consent for Chat.Create, ChatMessage.Send, and User.ReadBasic.All.</li>
+            <li>Create a sender account with a Teams license and sign in once.</li>
+            <li>Resolve the person by work email, open the 1:1 chat, and post the message.</li>
+            <li>Select Teams in the same notification step when that medium is configured.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="documents">
+      <div class="section-head">
+        <p class="eyebrow">07 · Meta business verification</p>
+        <h2>Six documents. An admin uploads them.</h2>
+        <p class="section-lead">Meta recommends this set. Use copies that show the legal business name. The review window is 5 to 10 days after a complete submission. The proof of concept can stay on the test number during the review.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <span>01</span>
+          <h3>Certificate of Incorporation</h3>
+          <p>Signed, stamped, sealed, or e-filed. Add a Certificate of Filing if you have one.</p>
+        </li>
+        <li>
+          <span>02</span>
+          <h3>Business license</h3>
+          <p>Issued by a government authority.</p>
+        </li>
+        <li>
+          <span>03</span>
+          <h3>Tax registration</h3>
+          <p>GST, VAT, or EIN, issued by a tax agency.</p>
+        </li>
+        <li>
+          <span>04</span>
+          <h3>Bank statements</h3>
+          <p>The latest statements.</p>
+        </li>
+        <li>
+          <span>05</span>
+          <h3>Utility bills</h3>
+          <p>Electricity, gas, water, internet, or phone. The latest bills.</p>
+        </li>
+        <li>
+          <span>06</span>
+          <h3>Credit report</h3>
+          <p>From a recognized reporting agency.</p>
+        </li>
+      </ol>
+      <ul class="notes">
+        <li>Clear, full pages only. Expired, blurry, cropped, or incomplete files are rejected.</li>
+        <li>Leave QR codes and barcodes in place.</li>
+        <li>A bilingual copy helps when a document is not in English.</li>
+        <li>Only an admin can complete business verification.</li>
+      </ul>
+    </section>
+
+    <section id="cost">
+      <div class="section-head">
+        <p class="eyebrow">08 · Meta’s charges</p>
+        <h2>Meta bills a delivered message. There is no monthly WhatsApp API subscription in this design.</h2>
+        <p class="section-lead">Rates are for a recipient on country code +94, from the card effective 1 October 2026. Amounts are US dollars. The country of the sender does not set the rate. A message that is not delivered is not charged.</p>
+      </div>
+
+      <div class="rates">
+        <div class="rate">
+          <div class="rate-top"><span>Marketing</span><strong>0.0732</strong></div>
+          <div class="bar"><span style="--w: 50.8%"></span></div>
+          <p>Offers, launches, re-engagement. Always a template.</p>
+        </div>
+        <div class="rate low">
+          <div class="rate-top"><span>Utility</span><strong>0.0020</strong></div>
+          <div class="bar"><span style="--w: 1.4%"></span></div>
+          <p>Order, booking, payment, and account updates the person expects.</p>
+        </div>
+        <div class="rate low">
+          <div class="rate-top"><span>Authentication</span><strong>0.0020</strong></div>
+          <div class="bar"><span style="--w: 1.4%"></span></div>
+          <p>One-time passcodes.</p>
+        </div>
+        <div class="rate high">
+          <div class="rate-top"><span>Authentication, international</span><strong>0.1440</strong></div>
+          <div class="bar"><span style="--w: 100%"></span></div>
+          <p>A passcode Meta classifies as international.</p>
+        </div>
+        <div class="rate low">
+          <div class="rate-top"><span>Service</span><strong>0.0020</strong></div>
+          <div class="bar"><span style="--w: 1.4%"></span></div>
+          <p>A non-template reply inside the 24-hour window, after a free allowance.</p>
+        </div>
+      </div>
+      <p class="fine">Bar length uses the international authentication rate as the full width. From 1 October 2026, the first 1,000 service messages per business phone number per month are free. Further service messages are USD 0.0020. Utility templates are charged whether or not a conversation window is open.</p>
+
+      <h3 class="table-title">Monthly profiles, every recipient on +94</h3>
+      <div class="table-wrap">
+        <table>
+          <caption>Illustrative Meta totals from the production POC, section 8.1. USD per month.</caption>
+          <thead>
+            <tr>
+              <th>Monthly profile</th>
+              <th>Calculation</th>
+              <th>Meta USD / month</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2,000 utility, replies inside the free allowance</td>
+              <td>2,000 × 0.0020</td>
+              <td>4.00</td>
+            </tr>
+            <tr>
+              <td>5,000 utility and 1,000 marketing</td>
+              <td>(5,000 × 0.0020) + (1,000 × 0.0732)</td>
+              <td>83.20</td>
+            </tr>
+            <tr>
+              <td>10,000 marketing</td>
+              <td>10,000 × 0.0732</td>
+              <td>732.00</td>
+            </tr>
+            <tr>
+              <td>10,000 utility</td>
+              <td>10,000 × 0.0020</td>
+              <td>20.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">One marketing message to Sri Lanka costs about as much as 37 utility messages. Ticket status and SLA notices are updates the person expects, so they belong in a utility template if Meta accepts that category. Meta can reclassify a template.</p>
+      <p class="fine">Confirm the live card before a budget is signed. Meta’s next scheduled chance to change rates is 1 January 2027. The source document also prices hosting and the build. Those bills sit outside this Meta card. Source: WhatsApp production POC, section 8.1.</p>
+    </section>
+
+    <section class="close" id="conclusion">
+      <p class="eyebrow light">09 · Conclusion</p>
+      <h2>WhatsApp integration is possible. Teams integration is possible.</h2>
+      <div class="close-grid">
+        <article>
+          <h3>WhatsApp</h3>
+          <p>The ticketing system can send a template or a text through the Cloud API, and the webhook can read a reply back onto the ticket. Production sending follows business verification, a company number, and approved templates.</p>
+        </article>
+        <article>
+          <h3>Teams</h3>
+          <p>Microsoft Graph can post a direct message to a specific person. The message shows the sender account’s name in that person’s Teams chat. The same notification step chooses Teams when the tenant or the user has selected it.</p>
+        </article>
+      </div>
+      <p class="close-line">A status change and an SLA clock can stay quiet, or they can travel on the medium configured for that tenant and that user.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Ticket wire · proof of concept briefing · November 2026</p>
+    <p>Static site for GitHub Pages. Open <code>index.html</code> in this folder.</p>
+  </footer>
+  <script src="js/site.js"></script>
+</body>
+</html>
